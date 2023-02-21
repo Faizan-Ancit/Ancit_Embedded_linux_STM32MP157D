@@ -1,9 +1,14 @@
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <unistd.h>				//Needed for I2C port
 #include <fcntl.h>				//Needed for I2C port
 #include <sys/ioctl.h>				//Needed for I2C port
 #include <linux/i2c-dev.h>			//Needed for I2C port
+
+
+\\\\\\\\\\\\\\\\\\\\\ CODE FOR CONFIGURATION OF I2C FOR ADXL345 \\\\\\\\\\\\\\\\\\\\
+
 
 int main()
 {
@@ -65,13 +70,14 @@ if (ioctl(file_i2c, I2C_SLAVE, addr) < 0)
 
 \\ Uncomment the following later
 
-\*
+
 \\\\\\\\\\\\\\\\\\\\\ WRITING THE ADDRESS TO THE I2C BUS \\\\\\\\\\\\\\\\\\\\\\
 
 \\\\\\\\\\ Writing to the power mode register \\\\\\\\\\\\\\\\
 
 buffer[0] = pm_dtr;
-length = 1;
+buffer[1] = pm_dtr_data;
+length = 2;
 if (write(file_i2c, buffer, length) != length)	
 	{
 		/* ERROR HANDLING: i2c transaction failed */
@@ -79,9 +85,40 @@ if (write(file_i2c, buffer, length) != length)
 	}
 else
 	{
-		printf("Write Successful");
+		printf("Power Mode Register configured.\n");
 	}
-*\
+
+
+\\\\\\\\\\\\\\\\\\\ Configuring the Data Format Register \\\\\\\\\\\\\
+
+buffer[0] = dfr_reg;
+buffer[1] = dfr_data;
+length = 2;
+if (write(file_i2c, buffer, length) != length)	
+	{
+		/* ERROR HANDLING: i2c transaction failed */
+		printf("Failed to write to the i2c bus.\n");
+	}
+else
+	{
+		printf("Data Format Register configured successfully.\n");
+	}
+	
+\\\\\\\\\\\\\\\\\\\ Configuring Power Saving Register \\\\\\\\\\\\\\\\\\\\
+
+buffer[0] = psr_reg;
+buffer[1] = psr_data;
+length = 2;
+if (write(file_i2c, buffer, length) != length)	
+	{
+		/* ERROR HANDLING: i2c transaction failed */
+		printf("Failed to write to the i2c bus.\n");
+	}
+else
+	{
+		printf("Power Saving Register configured sucessfully.\n");
+	}
+
 
 return 0;
 
