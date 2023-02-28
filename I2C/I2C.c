@@ -7,47 +7,47 @@
 #include <linux/i2c-dev.h>			//Needed for I2C port
 
 
-\\\\\\\\\\\\\\\\\\\\\ CODE FOR CONFIGURATION OF I2C FOR ADXL345 \\\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\ CODE FOR CONFIGURATION OF I2C FOR ADXL345 \\\\\\\\\\\\\\\\\\\\
 
 
 int main()
 {
 
-int file_i2c; \\ to read/write I2C bus
-int length; \\
-unsigned char buffer[60] = {0}; \\ I2C packets
-int addr = 0x5a;          //<<<<<The I2C address of the slave, need to be CHECKED !!!!!
+int file_i2c; //\\ to read/write I2C bus
+int length; 
+unsigned char buffer[60] = {0}; //\\ I2C packets
+int addr = 0x53;          //<<<<<The I2C address of the slave, need to be CHECKED !!!!!
 char *filename = (char*)"/dev/i2c-1";
 
 
 
 
-\\\\\\\\\\\\\\\\\\\\\\\\\ ADXL345 Configuration \\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\ ADXL345 Configuration \\\\\\\\\\\\\\\\\\\\\\\\\\
 
-\\\\\\\\\\\\ Register 0x2C - Power Mode and Data Transfer Rate \\\\\\\\\\\
+//\\\\\\\\\\\\ Register 0x2C - Power Mode and Data Transfer Rate \\\\\\\\\\\
 
 int pm_dtr = 0x2C;
-int pm_dtr_data = 0x0A; \\ Normal Mode ; Output Data Rate = 100
+int pm_dtr_data = 0x0A; //\\ Normal Mode ; Output Data Rate = 100
 
 
-\\\\\\\\\\\\ Register 0x31 - Data Format Register \\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\ Register 0x31 - Data Format Register \\\\\\\\\\\\\\\\\\
 
-\* read register 0x31, then right justified and , default 10bit resolution +/-2 measurement \\\\ and written back *\
+//\* read register 0x31, then right justified and , default 10bit resolution +/-2 measurement \\\\ and written back *\
 
 int dfr_reg = 0x31;
 int dfr_data = 0x00;
 
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-\\\\\\\\\\\\ Power Saving Register - 0x2D \\\\\\\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\ Power Saving Register - 0x2D \\\\\\\\\\\\\\\\\\\\\\\\
 
 int psr_reg = 0x2D;
 int psr_data = 0x0A;
 
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-\\\\\\\\\\\\\\\\\\\\\\\\\\ OPENING I2C BUS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\ OPENING I2C BUS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
 
@@ -55,25 +55,25 @@ int psr_data = 0x0A;
 	{
 		//ERROR HANDLING: you can check errno to see what went wrong
 		printf("Failed to open the i2c bus");
-		return;
+		return 0;
 	}
-\\ Changing to I2C Address of ADXL345
+//\\ Changing to I2C Address of ADXL345
 if (ioctl(file_i2c, I2C_SLAVE, addr) < 0)
 	{
 		printf("Failed to acquire bus access and/or talk to slave.\n");
 		//ERROR HANDLING; you can check errno to see what went wrong
-		return;
+		return 0;
 	}
 	
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
-\\ Uncomment the following later
+//\\ Uncomment the following later
 
 
-\\\\\\\\\\\\\\\\\\\\\ WRITING THE ADDRESS TO THE I2C BUS \\\\\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\\\ WRITING THE ADDRESS TO THE I2C BUS \\\\\\\\\\\\\\\\\\\\\\
 
-\\\\\\\\\\ Writing to the power mode register \\\\\\\\\\\\\\\\
+//\\\\\\\\\\ Writing to the power mode register \\\\\\\\\\\\\\\\
 
 buffer[0] = pm_dtr;
 buffer[1] = pm_dtr_data;
@@ -89,7 +89,7 @@ else
 	}
 
 
-\\\\\\\\\\\\\\\\\\\ Configuring the Data Format Register \\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\ Configuring the Data Format Register \\\\\\\\\\\\\
 
 buffer[0] = dfr_reg;
 buffer[1] = dfr_data;
@@ -104,7 +104,7 @@ else
 		printf("Data Format Register configured successfully.\n");
 	}
 	
-\\\\\\\\\\\\\\\\\\\ Configuring Power Saving Register \\\\\\\\\\\\\\\\\\\\
+//\\\\\\\\\\\\\\\\\\\ Configuring Power Saving Register \\\\\\\\\\\\\\\\\\\\
 
 buffer[0] = psr_reg;
 buffer[1] = psr_data;
@@ -123,23 +123,4 @@ else
 return 0;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
