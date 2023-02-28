@@ -5,17 +5,30 @@
 #include <fcntl.h>				//Needed for I2C port
 #include <sys/ioctl.h>				//Needed for I2C port
 #include <linux/i2c-dev.h>			//Needed for I2C port
-
+#include <time.h>
 
 //\\\\\\\\\\\\\\\\\\\\\ CODE FOR CONFIGURATION OF I2C FOR ADXL345 \\\\\\\\\\\\\\\\\\\\
 
+void delay(int number_of_seconds)
+{
+    // Converting time into milli_seconds
+    int milli_seconds = 1000 * number_of_seconds;
+ 
+    // Storing start time
+    clock_t start_time = clock();
+ 
+    // looping till required time is not achieved
+    while (clock() < start_time + milli_seconds)
+        ;
+}
 
 int main()
 {
 
 int file_i2c; //\\ to read/write I2C bus
 int length; 
-unsigned char buffer[60] = {0}; //\\ I2C packets
+unsigned char buffer[60] = {0}; //\\ I2C write packets
+int x_read_buffer[60] = {0}; // I2C read for x-axis
 int addr = 0x53;          //<<<<<The I2C address of the slave, need to be CHECKED !!!!!
 char *filename = (char*)"/dev/i2c-1";
 
@@ -46,6 +59,19 @@ int psr_reg = 0x2D;
 int psr_data = 0x0A;
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
+///////////////// Read Registers ////////////////////////////////////
+
+int x_reg_a = 0x32;
+
+////////////////////////////////////////////////////////////////////
+
+/**/
+
+
+
+
 
 //\\\\\\\\\\\\\\\\\\\\\\\\\\ OPENING I2C BUS \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -118,6 +144,49 @@ else
 	{
 		printf("Power Saving Register configured sucessfully.\n");
 	}
+
+
+ /*Introduce a while loop where the data from x-axis is read continuously.*/
+
+
+while(1){
+
+	// Write to register 0x32 which is the read register for x-axis
+	
+	buffer[0] = x_reg_a;
+	length = 1;
+	if (write(file_i2c, buffer, length) != length)	
+	{
+		/* ERROR HANDLING: i2c transaction failed */
+		printf("Failed to write to the x-axis read register\n");
+		return 0;
+	}
+	else
+	{
+		printf("Write to x-axis read register successful.\n");
+	}
+	if (read(file_i2c, x_read_buffer, length) != length) {
+		/*Error Handling*/
+		printf("Unable to read data from x-axis.\n Fix your code!!");
+	}
+	else
+	{
+		printf("X-axis acceleration raw data: %d",x_read_buffer[0]);
+	}
+	
+	delay(2);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 return 0;
